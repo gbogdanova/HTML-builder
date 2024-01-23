@@ -5,6 +5,7 @@ const projectDistDir = path.join(__dirname, 'project-dist');
 const componentsDir = path.join(__dirname, 'components');
 const stylesDir = path.join(__dirname, 'styles');
 const assetsDir = path.join(__dirname, 'assets');
+const assetsDistDir = path.join(__dirname, 'project-dist', 'assets'); // new
 const templatePath = path.join(__dirname, 'template.html');
 
 const readFile = async (filePath) => {
@@ -48,21 +49,19 @@ const compileStyles = async (stylesDir) => {
 
 const copyAssets = async (srcDir, destDir) => {
   try {
-    const destAssetsDir = path.join(destDir, 'assets');
-    await fs.mkdir(destAssetsDir, { recursive: true });
+    await fs.mkdir(destDir, { recursive: true });
 
     const files = await fs.readdir(srcDir);
-
     for (const file of files) {
       const srcPath = path.join(srcDir, file);
-      const destPath = path.join(destAssetsDir, file);
+      const destPath = path.join(destDir, file);
 
       const stats = await fs.stat(srcPath);
 
       if (stats.isFile()) {
         await fs.copyFile(srcPath, destPath);
       } else if (stats.isDirectory()) {
-        const subDestDir = path.join(destAssetsDir, file);
+        const subDestDir = path.join(destDir, file);
         await fs.mkdir(subDestDir, { recursive: true });
         await copyAssets(srcPath, subDestDir);
       }
@@ -89,7 +88,7 @@ const buildProject = async () => {
     const compiledStyles = await compileStyles(stylesDir);
     await fs.writeFile(path.join(projectDistDir, 'style.css'), compiledStyles);
 
-    await copyAssets(assetsDir, projectDistDir);
+    await copyAssets(assetsDir, assetsDistDir);
 
     console.log('Build completed successfully.');
   } catch (error) {
