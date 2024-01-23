@@ -14,12 +14,14 @@ console.log('Hello! Try to type something.');
 
 rl.on('line', (input) => {
   if (input.toLowerCase() === 'exit') {
+    console.log('Bye! Have a nice day!');
     rl.close();
   } else {
     writeStream.write(input + '\n');
   }
 });
 
-process.on('SIGINT', () => {
+rl.on('SIGINT', () => {
+  console.log('Bye! Have a nice day!');
   rl.close();
 });
